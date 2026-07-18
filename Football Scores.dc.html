@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Manrope:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  @keyframes livePulse { 0%,100%{opacity:1} 50%{opacity:.35} }
+  ::-webkit-scrollbar{height:8px;width:8px}
+  ::-webkit-scrollbar-thumb{background:rgba(120,120,120,.35);border-radius:8px}
+</style>
+</helmet>
+<div style="{{ pageStyle }}">
+
+  <div style="{{ headerStyle }}">
+    <div style="display:flex;align-items:center;gap:34px;min-width:0">
+      <div style="display:flex;align-items:center;gap:10px;flex:none">
+        <div style="{{ ballLogoStyle }}"></div>
+        <span style="{{ brandTextStyle }}">Fulltime</span>
+      </div>
+      <div style="display:flex;gap:{{ theme.tabGap }};overflow:auto">
+        <sc-for list="{{ leagues }}" as="lg" hint-placeholder-count="5">
+          <button style="{{ lg.tabStyle }}" onClick="{{ lg.select }}">{{ lg.short }}</button>
+        </sc-for>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:18px;flex:none">
+      <div style="{{ theme.segmentWrapStyle }}">
+        <button style="{{ styleAButtonStyle }}" onClick="{{ setStyleA }}">Style A</button>
+        <button style="{{ styleBButtonStyle }}" onClick="{{ setStyleB }}">Style B</button>
+      </div>
+      <button style="{{ modeButtonStyle }}" onClick="{{ toggleMode }}">
+        <div style="{{ modeIconStyle }}"></div>
+      </button>
+    </div>
+  </div>
+
+  <sc-if value="{{ isStandingsView }}" hint-placeholder-val="{{ true }}">
+    <div style="{{ heroStyle }}">
+      <div style="min-width:0">
+        <div style="{{ theme.heroKicker }}">{{ activeLeague.country }} &middot; Matchday {{ activeLeague.matchday }}</div>
+        <div style="{{ theme.heroTitle }}">{{ activeLeague.name }}</div>
+        <div style="{{ theme.seasonRowStyle }}">
+          <sc-for list="{{ seasons }}" as="sn" hint-placeholder-count="3">
+            <button style="{{ sn.selectStyle }}" onClick="{{ sn.select }}">{{ sn.label }}</button>
+          </sc-for>
+        </div>
+      </div>
+      <div style="{{ theme.heroStatChip }}">
+        <span style="{{ theme.heroStatNum }}">{{ activeLeague.teamCount }}</span>
+        <span style="{{ theme.heroStatLabel }}">Clubs</span>
+      </div>
+    </div>
+
+    <div style="{{ theme.bodyGridStyle }}">
+      <div style="{{ theme.cardStyle }}">
+        <div style="{{ theme.tableHeadRowStyle }}">
+          <div style="{{ theme.colRank }}">#</div>
+          <div style="{{ theme.colClub }}">Club</div>
+          <div style="{{ theme.colNum }}">P</div>
+          <div style="{{ theme.colNum }}">W</div>
+          <div style="{{ theme.colNum }}">D</div>
+          <div style="{{ theme.colNum }}">L</div>
+          <div style="{{ theme.colNum }}">GF</div>
+          <div style="{{ theme.colNum }}">GA</div>
+          <div style="{{ theme.colNum }}">GD</div>
+          <div style="{{ theme.colNumBold }}">Pts</div>
+          <div style="{{ theme.colForm }}">Form</div>
+        </div>
+        <sc-for list="{{ standingsRows }}" as="row" hint-placeholder-count="10">
+          <div style="{{ row.rowStyle }}">
+            <div style="{{ theme.colRank }}">{{ row.rank }}</div>
+            <button style="{{ theme.colClubCell }}" onClick="{{ row.open }}">
+              <div style="{{ row.badgeStyle }}">{{ row.initials }}</div>
+              <span style="{{ theme.clubName }}">{{ row.name }}</span>
+            </button>
+            <div style="{{ theme.colNum }}">{{ row.played }}</div>
+            <div style="{{ theme.colNum }}">{{ row.wins }}</div>
+            <div style="{{ theme.colNum }}">{{ row.draws }}</div>
+            <div style="{{ theme.colNum }}">{{ row.losses }}</div>
+            <div style="{{ theme.colNum }}">{{ row.gf }}</div>
+            <div style="{{ theme.colNum }}">{{ row.ga }}</div>
+            <div style="{{ theme.colNum }}">{{ row.gdLabel }}</div>
+            <div style="{{ theme.colNumBold }}">{{ row.pts }}</div>
+            <div style="{{ theme.colForm }}">
+              <sc-for list="{{ row.form }}" as="f" hint-placeholder-count="5">
+                <div style="{{ f.dotStyle }}"></div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-for>
+        <div style="{{ theme.legendRowStyle }}">
+          <div style="{{ theme.legendItem }}"><div style="{{ theme.legendDotUcl }}"></div>Champions League</div>
+          <div style="{{ theme.legendItem }}"><div style="{{ theme.legendDotUel }}"></div>Europa League</div>
+          <div style="{{ theme.legendItem }}"><div style="{{ theme.legendDotRel }}"></div>Relegation</div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:20px;min-width:0">
+        <div style="{{ theme.cardStyle }};padding:18px">
+          <div style="{{ theme.matchdayHeadRow }}">
+            <div style="{{ theme.sectionTitle }}">Matchday</div>
+            <button style="{{ theme.textLinkStyle }}" onClick="{{ openHistory }}">Full schedule &rarr;</button>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px;margin-top:12px">
+            <sc-for list="{{ matchesRail }}" as="m" hint-placeholder-count="4">
+              <button style="{{ m.cardStyle }}" onClick="{{ m.open }}">
+                <div style="{{ theme.matchStatusRow }}">
+                  <span style="{{ m.statusPillStyle }}">{{ m.statusLabel }}</span>
+                  <span style="{{ theme.matchVenue }}">{{ m.venue }}</span>
+                </div>
+                <div style="{{ theme.matchTeamRow }}">
+                  <div style="{{ theme.matchTeamName }}">{{ m.homeName }}</div>
+                  <div style="{{ theme.matchScore }}">{{ m.homeScoreLabel }}</div>
+                </div>
+                <div style="{{ theme.matchTeamRow }}">
+                  <div style="{{ theme.matchTeamName }}">{{ m.awayName }}</div>
+                  <div style="{{ theme.matchScore }}">{{ m.awayScoreLabel }}</div>
+                </div>
+              </button>
+            </sc-for>
+          </div>
+        </div>
+
+        <div style="{{ theme.cardStyle }};padding:18px">
+          <div style="{{ theme.sectionTitle }}">Top Scorers</div>
+          <div style="display:flex;flex-direction:column;margin-top:10px">
+            <sc-for list="{{ topScorers }}" as="p" hint-placeholder-count="3">
+              <button style="{{ theme.scorerRow }}" onClick="{{ p.open }}">
+                <div style="{{ theme.scorerRank }}">{{ p.rank }}</div>
+                <div style="flex:1;min-width:0">
+                  <div style="{{ theme.scorerName }}">{{ p.name }}</div>
+                  <div style="{{ theme.scorerTeam }}">{{ p.team }}</div>
+                </div>
+                <div style="{{ theme.scorerGoals }}">{{ p.goals }}</div>
+              </button>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isMatchView }}" hint-placeholder-val="{{ false }}">
+    <div style="{{ theme.matchWrapStyle }}">
+      <button style="{{ theme.backButtonStyle }}" onClick="{{ backToStandings }}">&larr; {{ backLabel }}</button>
+
+      <div style="{{ theme.scoreHeaderStyle }}">
+        <div style="{{ theme.scoreHeaderTeam }}">
+          <div style="{{ selectedMatch.homeBadgeStyle }}">{{ selectedMatch.homeInitials }}</div>
+          <div style="{{ theme.scoreHeaderTeamName }}">{{ selectedMatch.homeName }}</div>
+        </div>
+        <div style="{{ theme.scoreHeaderCenter }}">
+          <div style="{{ selectedMatch.statusPillStyle }}">{{ selectedMatch.statusLabel }}</div>
+          <div style="{{ theme.scoreBig }}">{{ selectedMatch.homeScore }} &ndash; {{ selectedMatch.awayScore }}</div>
+          <div style="{{ theme.scoreSub }}">{{ selectedMatch.venue }} &middot; Matchday {{ selectedMatch.matchday }}</div>
+        </div>
+        <div style="{{ theme.scoreHeaderTeam }}">
+          <div style="{{ selectedMatch.awayBadgeStyle }}">{{ selectedMatch.awayInitials }}</div>
+          <div style="{{ theme.scoreHeaderTeamName }}">{{ selectedMatch.awayName }}</div>
+        </div>
+      </div>
+
+      <div style="{{ theme.tabRowStyle }}">
+        <button style="{{ summaryTabStyle }}" onClick="{{ setSummaryTab }}">Summary</button>
+        <button style="{{ lineupsTabStyle }}" onClick="{{ setLineupsTab }}">Lineups</button>
+        <button style="{{ statsTabStyle }}" onClick="{{ setStatsTab }}">Stats</button>
+      </div>
+
+      <sc-if value="{{ isSummaryTab }}" hint-placeholder-val="{{ true }}">
+        <div style="{{ theme.cardStyle }};padding:22px 26px">
+          <sc-for list="{{ selectedMatch.events }}" as="ev" hint-placeholder-count="6">
+            <div style="{{ ev.rowStyle }}">
+              <div style="{{ ev.leftStyle }}">{{ ev.leftText }}</div>
+              <div style="{{ theme.timelineMinute }}">{{ ev.minute }}&prime;</div>
+              <div style="{{ ev.rightStyle }}">{{ ev.rightText }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isLineupsTab }}" hint-placeholder-val="{{ false }}">
+        <div style="{{ theme.cardStyle }};padding:22px 26px">
+          <div style="{{ theme.pitchWrapStyle }}">
+            <div style="{{ theme.pitchStyle }}">
+              <div style="{{ theme.pitchCenterLine }}"></div>
+              <div style="{{ theme.pitchCenterCircle }}"></div>
+              <sc-for list="{{ selectedMatch.homeLineup }}" as="pl" hint-placeholder-count="11">
+                <div style="{{ pl.dotWrap }}">
+                  <div style="{{ pl.dotStyle }}">{{ pl.number }}</div>
+                  <div style="{{ theme.playerLabel }}">{{ pl.name }}</div>
+                </div>
+              </sc-for>
+              <sc-for list="{{ selectedMatch.awayLineup }}" as="pl" hint-placeholder-count="11">
+                <div style="{{ pl.dotWrap }}">
+                  <div style="{{ pl.dotStyle }}">{{ pl.number }}</div>
+                  <div style="{{ theme.playerLabel }}">{{ pl.name }}</div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="{{ theme.subsGridStyle }}">
+            <div>
+              <div style="{{ theme.subsHeading }}">{{ selectedMatch.homeName }} &mdash; {{ selectedMatch.homeFormation }} subs</div>
+              <div style="{{ theme.subsChipsWrap }}">
+                <sc-for list="{{ selectedMatch.homeSubs }}" as="s" hint-placeholder-count="5">
+                  <div style="{{ theme.subChip }}">{{ s.number }} &middot; {{ s.name }}</div>
+                </sc-for>
+              </div>
+            </div>
+            <div>
+              <div style="{{ theme.subsHeading }}">{{ selectedMatch.awayName }} &mdash; {{ selectedMatch.awayFormation }} subs</div>
+              <div style="{{ theme.subsChipsWrap }}">
+                <sc-for list="{{ selectedMatch.awaySubs }}" as="s" hint-placeholder-count="5">
+                  <div style="{{ theme.subChip }}">{{ s.number }} &middot; {{ s.name }}</div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isStatsTab }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:20px">
+          <div style="{{ theme.cardStyle }};padding:22px 26px">
+            <div style="{{ theme.sectionTitle }}">Match Stats</div>
+            <div style="margin-top:14px;display:flex;flex-direction:column;gap:16px">
+              <sc-for list="{{ selectedMatch.statRows }}" as="st" hint-placeholder-count="6">
+                <div>
+                  <div style="{{ theme.statLabelRow }}">
+                    <span style="{{ theme.statValueLeft }}">{{ st.homeVal }}</span>
+                    <span style="{{ theme.statLabel }}">{{ st.label }}</span>
+                    <span style="{{ theme.statValueRight }}">{{ st.awayVal }}</span>
+                  </div>
+                  <div style="{{ theme.statBarTrack }}">
+                    <div style="{{ st.homeBarStyle }}"></div>
+                    <div style="{{ st.awayBarStyle }}"></div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
+          <sc-if value="{{ showAdvancedStats }}" hint-placeholder-val="{{ true }}">
+            <div style="{{ theme.advancedGridStyle }}">
+              <div style="{{ theme.cardStyle }};padding:22px">
+                <div style="{{ theme.sectionTitle }}">Team Radar</div>
+                <div style="position:relative;width:100%;max-width:320px;margin:14px auto 0">
+                  <svg viewBox="0 0 200 200" style="width:100%;display:block">
+                    <sc-for list="{{ selectedMatch.radarAxes }}" as="ax" hint-placeholder-count="5">
+                      <line x1="{{ ax.x1 }}" y1="{{ ax.y1 }}" x2="{{ ax.x2 }}" y2="{{ ax.y2 }}" style="{{ theme.radarAxisLine }}"></line>
+                    </sc-for>
+                    <polygon points="{{ selectedMatch.radarHomePoints }}" style="{{ theme.radarHomeFill }}"></polygon>
+                    <polygon points="{{ selectedMatch.radarAwayPoints }}" style="{{ theme.radarAwayFill }}"></polygon>
+                  </svg>
+                  <sc-for list="{{ selectedMatch.radarLabels }}" as="lb" hint-placeholder-count="5">
+                    <div style="{{ lb.style }}">{{ lb.text }}</div>
+                  </sc-for>
+                </div>
+                <div style="{{ theme.radarLegendRow }}">
+                  <div style="{{ theme.legendItem }}"><div style="{{ selectedMatch.legendDotHome }}"></div>{{ selectedMatch.homeName }}</div>
+                  <div style="{{ theme.legendItem }}"><div style="{{ selectedMatch.legendDotAway }}"></div>{{ selectedMatch.awayName }}</div>
+                </div>
+              </div>
+
+              <div style="{{ theme.cardStyle }};padding:22px">
+                <div style="{{ theme.sectionTitle }}">Attacking Heatmap</div>
+                <div style="{{ theme.heatmapPairStyle }}">
+                  <div>
+                    <div style="{{ theme.heatmapCaption }}">{{ selectedMatch.homeName }}</div>
+                    <div style="{{ theme.heatmapGridStyle }}">
+                      <sc-for list="{{ selectedMatch.homeHeatmap }}" as="c" hint-placeholder-count="20">
+                        <div style="{{ c.cellStyle }}"></div>
+                      </sc-for>
+                    </div>
+                  </div>
+                  <div>
+                    <div style="{{ theme.heatmapCaption }}">{{ selectedMatch.awayName }}</div>
+                    <div style="{{ theme.heatmapGridStyle }}">
+                      <sc-for list="{{ selectedMatch.awayHeatmap }}" as="c" hint-placeholder-count="20">
+                        <div style="{{ c.cellStyle }}"></div>
+                      </sc-for>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+    </div>
+  </sc-if>
+
+  <div style="{{ theme.footerStyle }}">Prototype data is illustrative, not live sports data.</div>
+
+  <sc-if value="{{ isHistoryView }}" hint-placeholder-val="{{ false }}">
+    <div style="{{ theme.matchWrapStyle }}">
+      <button style="{{ theme.backButtonStyle }}" onClick="{{ closeHistoryHandler }}">&larr; {{ activeLeague.name }} standings</button>
+      <div style="{{ theme.detailHeroStyle }}">
+        <div>
+          <div style="{{ theme.detailHeroName }}">{{ activeLeague.name }} &mdash; {{ activeLeague.matchday }} Matchdays</div>
+          <div style="{{ theme.detailHeroMeta }}">Season {{ activeLeague.season }}</div>
+        </div>
+      </div>
+      <div style="{{ theme.cardStyle }};padding:8px 0">
+        <sc-for list="{{ historyRows }}" as="md" hint-placeholder-count="10">
+          <div>
+            <button style="{{ md.headerStyle }}" onClick="{{ md.toggle }}">
+              <span>Matchday {{ md.matchday }}</span>
+              <span>{{ md.chevron }}</span>
+            </button>
+            <sc-if value="{{ md.expanded }}" hint-placeholder-val="{{ false }}">
+              <div style="{{ theme.historyFixtureList }}">
+                <sc-for list="{{ md.fixtures }}" as="fx" hint-placeholder-count="5">
+                  <button style="{{ fx.rowStyle }}" onClick="{{ fx.open }}">
+                    <span style="{{ theme.historyTeamNameHome }}">{{ fx.home }}</span>
+                    <span style="{{ theme.historyScore }}">{{ fx.scoreH }} &ndash; {{ fx.scoreA }}</span>
+                    <span style="{{ theme.historyTeamNameAway }}">{{ fx.away }}</span>
+                  </button>
+                </sc-for>
+              </div>
+            </sc-if>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isPlayerView }}" hint-placeholder-val="{{ false }}">
+    <div style="{{ theme.matchWrapStyle }}">
+      <button style="{{ theme.backButtonStyle }}" onClick="{{ closePlayer }}">&larr; {{ activeLeague.name }} standings</button>
+      <div style="{{ theme.detailHeroStyle }}">
+        <div style="{{ selectedPlayer.avatarStyle }}">{{ selectedPlayer.initials }}</div>
+        <div>
+          <div style="{{ theme.detailHeroName }}">{{ selectedPlayer.name }}</div>
+          <div style="{{ theme.detailHeroMeta }}">{{ selectedPlayer.team }} &middot; {{ selectedPlayer.position }} &middot; Age {{ selectedPlayer.age }}</div>
+        </div>
+      </div>
+      <div style="{{ theme.cardStyle }};padding:22px 26px">
+        <div style="{{ theme.sectionTitle }}">Season Stats</div>
+        <div style="{{ theme.detailStatsGrid }}">
+          <sc-for list="{{ selectedPlayer.stats }}" as="st" hint-placeholder-count="6">
+            <div style="{{ theme.modalStatCell }}">
+              <div style="{{ theme.modalStatNum }}">{{ st.value }}</div>
+              <div style="{{ theme.modalStatLabel }}">{{ st.label }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isTeamView }}" hint-placeholder-val="{{ false }}">
+    <div style="{{ theme.matchWrapStyle }}">
+      <button style="{{ theme.backButtonStyle }}" onClick="{{ closeTeam }}">&larr; {{ activeLeague.name }} standings</button>
+      <div style="{{ theme.detailHeroStyle }}">
+        <div style="{{ selectedTeam.avatarStyle }}">{{ selectedTeam.initials }}</div>
+        <div>
+          <div style="{{ theme.detailHeroName }}">{{ selectedTeam.name }}</div>
+          <div style="{{ theme.detailHeroMeta }}">{{ selectedTeam.league }} &middot; {{ selectedTeam.stadium }} &middot; Est. {{ selectedTeam.founded }}</div>
+        </div>
+      </div>
+      <div style="{{ theme.cardStyle }};padding:22px 26px">
+        <div style="{{ theme.sectionTitle }}">Season Stats</div>
+        <div style="{{ theme.detailStatsGrid }}">
+          <sc-for list="{{ selectedTeam.stats }}" as="st" hint-placeholder-count="6">
+            <div style="{{ theme.modalStatCell }}">
+              <div style="{{ theme.modalStatNum }}">{{ st.value }}</div>
+              <div style="{{ theme.modalStatLabel }}">{{ st.label }}</div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="{{ theme.modalFormRow }}">
+          <span style="{{ theme.modalFormLabel }}">Form</span>
+          <sc-for list="{{ selectedTeam.form }}" as="f" hint-placeholder-count="5">
+            <div style="{{ f.dotStyle }}"></div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;visualStyle&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;A&quot;,&quot;options&quot;:[&quot;A&quot;,&quot;B&quot;],&quot;tsType&quot;:&quot;'A'|'B'&quot;,&quot;section&quot;:&quot;Style&quot;},&quot;startMode&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;dark&quot;,&quot;options&quot;:[&quot;light&quot;,&quot;dark&quot;],&quot;tsType&quot;:&quot;'light'|'dark'&quot;,&quot;section&quot;:&quot;Style&quot;},&quot;showAdvancedStats&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Stats&quot;}}">
+function mulberry32(seed){
+  let a = seed >>> 0;
+  return function(){
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function hashStr(s){
+  let h = 0;
+  for (let i = 0; i < s.length; i++) { h = Math.imul(31, h) + s.charCodeAt(i) | 0; }
+  return h >>> 0;
+}
+function initials(name){
+  const words = name.split(' ').filter(w => w.length > 2 || /^[A-Z]/.test(w));
+  const use = words.length >= 2 ? words : name.split(' ');
+  return use.slice(0,2).map(w => w[0]).join('').toUpperCase();
+}
+
+const SURNAMES = ['Silva','Rossi','Keller','Dubois','Nilsson','Okafor','Haruna','Petrov','Novak','Lindgren','Costa','Reyes','Bakker','Schmidt','Moreau','Alvarez','Kowalski','Tanaka','Berisha','Duarte','Fischer','Larsen','Adeyemi','Mercier'];
+function surname(rng){ return SURNAMES[Math.floor(rng()*SURNAMES.length)]; }
+function playerName(rng){
+  const initial = String.fromCharCode(65 + Math.floor(rng()*26));
+  return initial + '. ' + surname(rng);
+}
+
+const FORMATIONS = {
+  '4-3-3': [
+    {x:50,y:95},
+    {x:10,y:78},{x:36,y:82},{x:64,y:82},{x:90,y:78},
+    {x:22,y:58},{x:50,y:62},{x:78,y:58},
+    {x:14,y:22},{x:50,y:12},{x:86,y:22}
+  ],
+  '4-2-3-1': [
+    {x:50,y:95},
+    {x:10,y:78},{x:36,y:82},{x:64,y:82},{x:90,y:78},
+    {x:32,y:60},{x:68,y:60},
+    {x:14,y:36},{x:50,y:30},{x:86,y:36},
+    {x:50,y:10}
+  ],
+  '4-4-2': [
+    {x:50,y:95},
+    {x:10,y:78},{x:36,y:82},{x:64,y:82},{x:90,y:78},
+    {x:10,y:50},{x:36,y:56},{x:64,y:56},{x:90,y:50},
+    {x:34,y:16},{x:66,y:16}
+  ]
+};
+const FORMATION_KEYS = Object.keys(FORMATIONS);
+const AXES = ['Attack','Defense','Possession','Pressing','Set Pieces'];
+const SEASONS = ['2025/26','2024/25','2023/24'];
+const CURRENT_MATCHDAY = 20;
+
+function genSeasonHistory(teams, seed, count){
+  const history = [];
+  for (let md = 1; md <= count; md++){
+    const rng = mulberry32(seed + md*7919);
+    const order = teams.map((t,i) => i);
+    for (let i = order.length - 1; i > 0; i--){
+      const j = Math.floor(rng()*(i+1));
+      [order[i], order[j]] = [order[j], order[i]];
+    }
+    const fixtures = [];
+    for (let i = 0; i < order.length - 1; i += 2){
+      const home = teams[order[i]], away = teams[order[i+1]];
+      fixtures.push({
+        id: 'hist-' + seed + '-' + md + '-' + i,
+        home, away, matchday: md,
+        scoreH: Math.floor(rng()*4), scoreA: Math.floor(rng()*4),
+        status: 'FT', venue: home.split(' ')[0] + ' Arena'
+      });
+    }
+    history.push({ matchday: md, fixtures });
+  }
+  return history;
+}
+
+const LEAGUE_DEFS = [
+  { id:'epl', short:'EPL', name:'Premier League', country:'England', hue:150,
+    teams:['Manchester City','Arsenal','Liverpool','Aston Villa','Tottenham Hotspur','Chelsea','Newcastle United','Manchester United','West Ham United','Brighton & Hove Albion'] },
+  { id:'laliga', short:'LaLiga', name:'La Liga', country:'Spain', hue:25,
+    teams:['Real Madrid','Barcelona','Girona','Atletico Madrid','Athletic Bilbao','Real Sociedad','Real Betis','Villarreal','Valencia','Sevilla'] },
+  { id:'seriea', short:'Serie A', name:'Serie A', country:'Italy', hue:220,
+    teams:['Inter Milan','AC Milan','Juventus','Bologna','Napoli','Fiorentina','Atalanta','AS Roma','Lazio','Torino'] },
+  { id:'bundesliga', short:'Bundesliga', name:'Bundesliga', country:'Germany', hue:5,
+    teams:['Bayer Leverkusen','Bayern Munich','VfB Stuttgart','RB Leipzig','Borussia Dortmund','Eintracht Frankfurt','SC Freiburg','TSG Hoffenheim','Werder Bremen','FC Augsburg'] },
+  { id:'ligue1', short:'Ligue 1', name:'Ligue 1', country:'France', hue:290,
+    teams:['Paris Saint-Germain','AS Monaco','Stade Brestois','LOSC Lille','OGC Nice','RC Lens','Olympique Marseille','Stade de Reims','Stade Rennais','Toulouse FC'] }
+];
+
+function buildStandingsAtMatchday(teams, historyRaw, throughMD){
+  const table = {};
+  teams.forEach(t => { table[t] = { name:t, played:0, wins:0, draws:0, losses:0, gf:0, ga:0, results:[] }; });
+  historyRaw.forEach(md => {
+    if (md.matchday > throughMD) return;
+    md.fixtures.forEach(f => {
+      const h = table[f.home], a = table[f.away];
+      if (!h || !a) return;
+      h.played++; a.played++; h.gf += f.scoreH; h.ga += f.scoreA; a.gf += f.scoreA; a.ga += f.scoreH;
+      if (f.scoreH > f.scoreA) { h.wins++; a.losses++; h.results.push('W'); a.results.push('L'); }
+      else if (f.scoreH < f.scoreA) { a.wins++; h.losses++; h.results.push('L'); a.results.push('W'); }
+      else { h.draws++; a.draws++; h.results.push('D'); a.results.push('D'); }
+    });
+  });
+  const rows = Object.values(table).map(t => ({ ...t, pts: t.wins*3 + t.draws, gd: t.gf - t.ga, form: t.results.slice(-5) }));
+  rows.sort((a,b) => b.pts - a.pts || (b.gd - a.gd) || (b.gf - a.gf));
+  rows.forEach((r,i) => r.rank = i+1);
+  return rows;
+}
+
+function genPlayerProfile(name, team, goals, seed){
+  const rng = mulberry32(hashStr(name + team) + seed);
+  const positions = ['Forward','Winger','Attacking Midfielder'];
+  const apps = 24 + Math.floor(rng()*10);
+  return {
+    name, team, initials: initials(name),
+    position: positions[Math.floor(rng()*positions.length)],
+    age: 21 + Math.floor(rng()*13),
+    stats: [
+      { label:'Goals', value: goals },
+      { label:'Appearances', value: apps },
+      { label:'Assists', value: 2 + Math.floor(rng()*9) },
+      { label:'Minutes', value: (apps*(70+Math.floor(rng()*20))).toLocaleString() },
+      { label:'Shot Accuracy', value: (48 + Math.floor(rng()*22)) + '%' },
+      { label:'Pass Accuracy', value: (72 + Math.floor(rng()*18)) + '%' }
+    ]
+  };
+}
+
+const STADIUM_WORDS = ['Park','Arena','Stadium','Field','Ground'];
+function genTeamProfile(row, leagueName, seed){
+  const rng = mulberry32(hashStr(row.name) + seed);
+  return {
+    stadium: row.name.split(' ')[0] + ' ' + STADIUM_WORDS[Math.floor(rng()*STADIUM_WORDS.length)],
+    founded: 1880 + Math.floor(rng()*90),
+    stats: [
+      { label:'Position', value: row.rank },
+      { label:'Points', value: row.pts },
+      { label:'Goal Diff', value: row.gdLabel },
+      { label:'Played', value: row.played },
+      { label:'W-D-L', value: row.wins + '-' + row.draws + '-' + row.losses },
+      { label:'Goals F-A', value: row.gf + '-' + row.ga }
+    ]
+  };
+}
+
+function genTopScorers(teams, seed){
+  const rng = mulberry32(seed + 999);
+  const goalsList = [21,17,15];
+  return goalsList.map((g,i) => ({
+    rank: i+1,
+    name: playerName(rng),
+    team: teams[Math.floor(rng()*teams.length)],
+    goals: g - Math.floor(rng()*2)
+  }));
+}
+
+function genMatchesRail(league, seed){
+  const t = league.teams;
+  const rng = mulberry32(seed + 42);
+  const pick = (excl) => { let i; do { i = Math.floor(rng()*t.length); } while (excl.includes(i)); return i; };
+  const specs = [
+    { status:'LIVE', minute: 55 + Math.floor(rng()*30) },
+    { status:'FT' },
+    { status:'FT' },
+    { status:'SCHEDULED', kickoff:'Sat 15:00' }
+  ];
+  const used = [];
+  return specs.map((sp, idx) => {
+    const hi = pick(used); used.push(hi);
+    const ai = pick(used); used.push(ai);
+    const home = t[hi], away = t[ai];
+    const scoreH = sp.status === 'SCHEDULED' ? null : Math.floor(rng()*4);
+    const scoreA = sp.status === 'SCHEDULED' ? null : Math.floor(rng()*4);
+    return {
+      id: league.id + '-m' + idx,
+      home, away, scoreH, scoreA,
+      status: sp.status, minute: sp.minute, kickoff: sp.kickoff,
+      venue: home + ' Stadium'.replace(home,'').length ? home.split(' ')[0] + ' Arena' : home + ' Arena'
+    };
+  });
+}
+
+function buildMatchDetail(seed, home, away, competition, matchday, venue, declaredScoreH, declaredScoreA){
+  const rng = mulberry32(seed);
+  const homeFormation = FORMATION_KEYS[Math.floor(rng()*FORMATION_KEYS.length)];
+  const awayFormation = FORMATION_KEYS[Math.floor(rng()*FORMATION_KEYS.length)];
+  const homeLineup = FORMATIONS[homeFormation].map((p,i) => ({ x:p.x, y:p.y, number:i+1, name: playerName(rng) }));
+  const awayLineup = FORMATIONS[awayFormation].map((p,i) => ({ x:p.x, y:100-p.y, number:i+1, name: playerName(rng) }));
+  const homeSubs = Array.from({length:5}, (_,i) => ({ number: 12+i, name: playerName(rng) }));
+  const awaySubs = Array.from({length:5}, (_,i) => ({ number: 12+i, name: playerName(rng) }));
+
+  const possessionHome = Math.round(38 + rng()*24);
+  const possessionAway = 100 - possessionHome;
+  const shotsHome = 8 + Math.floor(rng()*10);
+  const shotsAway = 8 + Math.floor(rng()*10);
+  const sotHome = Math.min(shotsHome, 2 + Math.floor(rng()*6));
+  const sotAway = Math.min(shotsAway, 2 + Math.floor(rng()*6));
+  const xgHome = +(declaredScoreH + rng()*1.2).toFixed(1);
+  const xgAway = +(declaredScoreA + rng()*1.2).toFixed(1);
+  const cornersHome = 2 + Math.floor(rng()*7);
+  const cornersAway = 2 + Math.floor(rng()*7);
+  const foulsHome = 6 + Math.floor(rng()*10);
+  const foulsAway = 6 + Math.floor(rng()*10);
+
+  const events = [];
+  function addGoals(count, team, lineup){
+    for (let k=0;k<count;k++){
+      const scorer = lineup[2 + Math.floor(rng()*8)];
+      events.push({ minute: 3+Math.floor(rng()*87), type:'goal', team, player: scorer.name });
+    }
+  }
+  addGoals(declaredScoreH, 'home', homeLineup);
+  addGoals(declaredScoreA, 'away', awayLineup);
+  const cardCount = 2 + Math.floor(rng()*3);
+  for (let k=0;k<cardCount;k++){
+    const team = rng()<0.5 ? 'home' : 'away';
+    const lineup = team==='home' ? homeLineup : awayLineup;
+    const player = lineup[1 + Math.floor(rng()*10)];
+    events.push({ minute: 5+Math.floor(rng()*85), type: rng()<0.85?'yellow':'red', team, player: player.name });
+  }
+  [['home',homeLineup],['away',awayLineup]].forEach(([team, lineup]) => {
+    for (let s=0;s<2;s++){
+      events.push({ minute: 58+Math.floor(rng()*30), type:'sub', team, player: lineup[4+s].name, incoming: homeSubs[s] ? homeSubs[s].name : 'Sub' });
+    }
+  });
+  events.sort((a,b) => a.minute - b.minute);
+
+  const radarHome = {
+    attack: Math.min(99, Math.round(50+declaredScoreH*8+rng()*15)),
+    defense: Math.min(99, Math.round(75-declaredScoreA*7+rng()*10)),
+    possession: possessionHome,
+    pressing: Math.round(40+rng()*50),
+    setPieces: Math.round(30+rng()*60)
+  };
+  const radarAway = {
+    attack: Math.min(99, Math.round(50+declaredScoreA*8+rng()*15)),
+    defense: Math.min(99, Math.round(75-declaredScoreH*7+rng()*10)),
+    possession: possessionAway,
+    pressing: Math.round(40+rng()*50),
+    setPieces: Math.round(30+rng()*60)
+  };
+
+  function genHeatmap(biasShots){
+    return Array.from({length:20}, (_,i) => {
+      const row = Math.floor(i/5);
+      const bias = row >= 3 ? biasShots/20 : 0.15;
+      return Math.min(1, rng()*0.6 + bias);
+    });
+  }
+
+  return {
+    homeFormation, awayFormation, homeLineup, awayLineup, homeSubs, awaySubs,
+    possessionHome, possessionAway, shotsHome, shotsAway, sotHome, sotAway,
+    xgHome, xgAway, cornersHome, cornersAway, foulsHome, foulsAway,
+    events, radarHome, radarAway,
+    homeHeatmapRaw: genHeatmap(shotsHome), awayHeatmapRaw: genHeatmap(shotsAway)
+  };
+}
+
+class Component extends DCLogic {
+  state = {
+    styleVariant: this.props.visualStyle || 'A',
+    mode: this.props.startMode || 'light',
+    leagueId: 'epl',
+    season: SEASONS[0],
+    view: 'standings',
+    activeTab: 'summary',
+    selectedMatchId: null,
+    selectedPlayerKey: null,
+    selectedTeamKey: null,
+    expandedMatchday: null
+  };
+
+  selectLeague(id){ this.setState({ leagueId: id, view: 'standings' }); }
+  selectSeason(season){ this.setState({ season, view: 'standings', expandedMatchday: null }); }
+  openHistory(){ this.setState({ view: 'history' }); }
+  closeHistory(){ this.setState({ view: 'standings' }); }
+  toggleMatchday(md){ this.setState(s => ({ expandedMatchday: s.expandedMatchday === md ? null : md })); }
+  openMatch(m){
+    if (m.status === 'SCHEDULED') return;
+    this.setState(s => ({ selectedMatchId: m.id, view: 'match', activeTab: 'summary', returnView: s.view === 'history' ? 'history' : 'standings' }));
+  }
+  openPlayer(p){ this.setState({ selectedPlayerKey: p.name + '|' + p.team, view: 'player' }); }
+  closePlayer(){ this.setState({ selectedPlayerKey: null, view: 'standings' }); }
+  openTeam(name){ this.setState({ selectedTeamKey: name, view: 'team' }); }
+  closeTeam(){ this.setState({ selectedTeamKey: null, view: 'standings' }); }
+
+  renderVals(){
+    const theme = this.getTheme();
+    const league = LEAGUE_DEFS.find(l => l.id === this.state.leagueId) || LEAGUE_DEFS[0];
+    const seed = hashStr(league.id + '|' + this.state.season);
+    const standingsRaw = genStandings(league.teams, seed);
+    const topScorersRaw = genTopScorers(league.teams, seed);
+    const matchesRaw = genMatchesRail(league, seed);
+    const accent = 'oklch(62% 0.17 ' + league.hue + ')';
+    const accentSoft = this.state.mode === 'dark' ? 'oklch(30% 0.06 ' + league.hue + ')' : 'oklch(94% 0.03 ' + league.hue + ')';
+
+    const leagues = LEAGUE_DEFS.map(lg => ({
+      id: lg.id, short: lg.short,
+      select: () => this.selectLeague(lg.id),
+      tabStyle: theme.tabStyle(lg.id === league.id, 'oklch(62% 0.17 ' + lg.hue + ')')
+    }));
+
+    const standingsRows = standingsRaw.map(row => {
+      let zone = null;
+      if (row.rank <= 4) zone = 'ucl'; else if (row.rank === 5) zone = 'uel'; else if (row.rank > league.teams.length - 3) zone = 'rel';
+      return {
+        rank: row.rank, name: row.name, initials: initials(row.name),
+        played: row.played, wins: row.wins, draws: row.draws, losses: row.losses,
+        gf: row.gf, ga: row.ga, gdLabel: (row.gd > 0 ? '+' : '') + row.gd, pts: row.pts,
+        rowStyle: theme.tableRowStyle(zone, accentSoft),
+        badgeStyle: theme.badgeStyle(accent),
+        form: row.form.map(f => ({ dotStyle: theme.formDotStyle(f) })),
+        open: () => this.openTeam(row.name)
+      };
+    });
+
+    const topScorers = topScorersRaw.map(p => ({ ...p, open: () => this.openPlayer(p) }));
+    let selectedPlayer = null;
+    if (this.state.selectedPlayerKey) {
+      const found = topScorersRaw.find(p => (p.name + '|' + p.team) === this.state.selectedPlayerKey);
+      if (found) {
+        const profile = genPlayerProfile(found.name, found.team, found.goals, seed);
+        selectedPlayer = { ...profile, avatarStyle: theme.modalAvatarStyle(accent) };
+      }
+    }
+
+    const matchesRail = matchesRaw.map(m => {
+      const isScheduled = m.status === 'SCHEDULED';
+      const statusLabel = m.status === 'LIVE' ? m.minute + "'" : (m.status === 'FT' ? 'FT' : m.kickoff);
+      return {
+        cardStyle: theme.matchCardStyle(isScheduled),
+        open: () => this.openMatch(m),
+        statusPillStyle: theme.matchStatusPill(m.status, accent),
+        statusLabel,
+        venue: m.venue,
+        homeName: m.home, awayName: m.away,
+        homeScoreLabel: isScheduled ? '-' : m.scoreH,
+        awayScoreLabel: isScheduled ? '-' : m.scoreA
+      };
+    });
+
+    let selectedTeam = null;
+    if (this.state.selectedTeamKey) {
+      const row = standingsRows.find(r => r.name === this.state.selectedTeamKey);
+      if (row) {
+        const profile = genTeamProfile(row, league.name, seed);
+        selectedTeam = { ...row, ...profile, league: league.name, avatarStyle: theme.modalAvatarStyle(accent) };
+      }
+    }
+
+    const historyRaw = genSeasonHistory(league.teams, seed, CURRENT_MATCHDAY);
+    const allMatches = matchesRaw.concat(historyRaw.flatMap(md => md.fixtures));
+
+    let selectedMatch = null;
+    const selMatchRaw = allMatches.find(m => m.id === this.state.selectedMatchId);
+    if (selMatchRaw) {
+      const dSeed = hashStr(selMatchRaw.id);
+      const detail = buildMatchDetail(dSeed, selMatchRaw.home, selMatchRaw.away, league.name, CURRENT_MATCHDAY, selMatchRaw.venue, selMatchRaw.scoreH, selMatchRaw.scoreA);
+      const cx = 100, cy = 100, r = 75;
+      function radarPointsStr(vals){
+        return AXES.map((axName, i) => {
+          const angle = -Math.PI/2 + i*(2*Math.PI/AXES.length);
+          const rad = r * (vals[['attack','defense','possession','pressing','setPieces'][i]]/100);
+          return (cx+rad*Math.cos(angle)).toFixed(1) + ',' + (cy+rad*Math.sin(angle)).toFixed(1);
+        }).join(' ');
+      }
+      const radarAxes = AXES.map((_, i) => {
+        const angle = -Math.PI/2 + i*(2*Math.PI/AXES.length);
+        return { x1: cx, y1: cy, x2: (cx+r*Math.cos(angle)).toFixed(1), y2: (cy+r*Math.sin(angle)).toFixed(1) };
+      });
+      const radarLabels = AXES.map((name, i) => {
+        const angle = -Math.PI/2 + i*(2*Math.PI/AXES.length);
+        const lr = r + 18;
+        const px = 50 + (lr*Math.cos(angle)/200)*100;
+        const py = 50 + (lr*Math.sin(angle)/200)*100;
+        return { text: name, style: theme.radarLabelStyle(px, py) };
+      });
+
+      const statDefs = [
+        { label:'Possession %', h: detail.possessionHome, a: detail.possessionAway, max: 100 },
+        { label:'Shots', h: detail.shotsHome, a: detail.shotsAway, max: Math.max(detail.shotsHome, detail.shotsAway) },
+        { label:'Shots on Target', h: detail.sotHome, a: detail.sotAway, max: Math.max(detail.sotHome, detail.sotAway) },
+        { label:'Expected Goals (xG)', h: detail.xgHome, a: detail.xgAway, max: Math.max(detail.xgHome, detail.xgAway) },
+        { label:'Corners', h: detail.cornersHome, a: detail.cornersAway, max: Math.max(detail.cornersHome, detail.cornersAway) },
+        { label:'Fouls', h: detail.foulsHome, a: detail.foulsAway, max: Math.max(detail.foulsHome, detail.foulsAway) }
+      ];
+      const statRows = statDefs.map(sd => {
+        const total = sd.h + sd.a || 1;
+        return {
+          label: sd.label, homeVal: sd.h, awayVal: sd.a,
+          homeBarStyle: theme.statBar('left', accent, (sd.h/total)*100),
+          awayBarStyle: theme.statBar('right', 'oklch(62% 0.14 260)', (sd.a/total)*100)
+        };
+      });
+
+      const events = detail.events.map(ev => {
+        const label = ev.type === 'goal' ? '\u26bd ' + ev.player : ev.type === 'yellow' ? '\u{1F7E8} ' + ev.player : ev.type === 'red' ? '\u{1F7E5} ' + ev.player : '\u21C4 ' + ev.player;
+        return {
+          minute: ev.minute,
+          rowStyle: theme.timelineRow,
+          leftStyle: theme.timelineSide(ev.team === 'home', 'left'),
+          rightStyle: theme.timelineSide(ev.team === 'away', 'right'),
+          leftText: ev.team === 'home' ? label : '',
+          rightText: ev.team === 'away' ? label : ''
+        };
+      });
+
+      const homeLineup = detail.homeLineup.map(pl => ({
+        dotWrap: theme.pitchDotWrap(pl.x, pl.y),
+        dotStyle: theme.pitchDot(accent),
+        number: pl.number, name: pl.name
+      }));
+      const awayLineup = detail.awayLineup.map(pl => ({
+        dotWrap: theme.pitchDotWrap(pl.x, pl.y),
+        dotStyle: theme.pitchDot('oklch(62% 0.14 260)'),
+        number: pl.number, name: pl.name
+      }));
+
+      const homeHeatmap = detail.homeHeatmapRaw.map(v => ({ cellStyle: theme.heatCell(v, league.hue) }));
+      const awayHeatmap = detail.awayHeatmapRaw.map(v => ({ cellStyle: theme.heatCell(v, 260) }));
+
+      selectedMatch = {
+        homeName: selMatchRaw.home, awayName: selMatchRaw.away,
+        homeInitials: initials(selMatchRaw.home), awayInitials: initials(selMatchRaw.away),
+        homeBadgeStyle: theme.matchHeaderBadge(accent), awayBadgeStyle: theme.matchHeaderBadge('oklch(62% 0.14 260)'),
+        homeScore: selMatchRaw.scoreH, awayScore: selMatchRaw.scoreA,
+        statusLabel: selMatchRaw.status === 'LIVE' ? 'LIVE \u00b7 ' + selMatchRaw.minute + "'" : 'Full Time',
+        statusPillStyle: theme.matchDetailStatusPill(selMatchRaw.status, accent),
+        venue: selMatchRaw.venue, matchday: selMatchRaw.matchday || CURRENT_MATCHDAY,
+        homeFormation: detail.homeFormation, awayFormation: detail.awayFormation,
+        homeSubs: detail.homeSubs, awaySubs: detail.awaySubs,
+        events,
+        statRows,
+        radarAxes, radarLabels,
+        radarHomePoints: radarPointsStr(detail.radarHome),
+        radarAwayPoints: radarPointsStr(detail.radarAway),
+        legendDotHome: theme.legendDot(accent), legendDotAway: theme.legendDot('oklch(62% 0.14 260)'),
+        homeLineup, awayLineup,
+        homeHeatmap, awayHeatmap
+      };
+    }
+
+    return {
+      theme,
+      pageStyle: theme.pageStyle,
+      headerStyle: theme.headerStyle,
+      ballLogoStyle: theme.ballLogoStyle,
+      brandTextStyle: theme.brandTextStyle,
+      styleAButtonStyle: theme.segmentButtonStyle(this.state.styleVariant === 'A'),
+      styleBButtonStyle: theme.segmentButtonStyle(this.state.styleVariant === 'B'),
+      setStyleA: () => this.setState({ styleVariant: 'A' }),
+      setStyleB: () => this.setState({ styleVariant: 'B' }),
+      modeButtonStyle: theme.modeButtonStyle,
+      modeIconStyle: theme.modeIconStyle(this.state.mode),
+      toggleMode: () => this.setState(s => ({ mode: s.mode === 'light' ? 'dark' : 'light' })),
+      leagues,
+      activeLeague: { name: league.name, country: league.country, matchday: CURRENT_MATCHDAY, teamCount: league.teams.length, season: this.state.season },
+      seasons: SEASONS.map(s => ({ label: s, selectStyle: theme.seasonPillStyle(s === this.state.season, accent), select: () => this.selectSeason(s) })),
+      openHistory: () => this.openHistory(),
+      isStandingsView: this.state.view === 'standings',
+      isMatchView: this.state.view === 'match' && !!selectedMatch,
+      heroStyle: theme.heroStyle(accent),
+      standingsRows,
+      topScorers,
+      matchesRail,
+      selectedMatch,
+      backToStandings: () => this.setState(s => ({ view: s.returnView || 'standings' })),
+      backLabel: this.state.returnView === 'history' ? 'Matchday history' : (LEAGUE_DEFS.find(l => l.id === this.state.leagueId) || LEAGUE_DEFS[0]).name + ' standings',
+      summaryTabStyle: theme.matchTabStyle(this.state.activeTab === 'summary'),
+      lineupsTabStyle: theme.matchTabStyle(this.state.activeTab === 'lineups'),
+      statsTabStyle: theme.matchTabStyle(this.state.activeTab === 'stats'),
+      setSummaryTab: () => this.setState({ activeTab: 'summary' }),
+      setLineupsTab: () => this.setState({ activeTab: 'lineups' }),
+      setStatsTab: () => this.setState({ activeTab: 'stats' }),
+      isSummaryTab: this.state.activeTab === 'summary',
+      isLineupsTab: this.state.activeTab === 'lineups',
+      isStatsTab: this.state.activeTab === 'stats',
+      showAdvancedStats: this.props.showAdvancedStats !== false,
+      isPlayerView: this.state.view === 'player' && !!selectedPlayer,
+      selectedPlayer,
+      closePlayer: () => this.closePlayer(),
+      isTeamView: this.state.view === 'team' && !!selectedTeam,
+      selectedTeam,
+      closeTeam: () => this.closeTeam(),
+      isHistoryView: this.state.view === 'history',
+      closeHistoryHandler: () => this.closeHistory(),
+      historyRows: historyRaw.slice().reverse().map(md => {
+        const expanded = this.state.expandedMatchday === md.matchday;
+        return {
+          matchday: md.matchday,
+          headerStyle: theme.historyHeaderStyle(expanded),
+          toggle: () => this.toggleMatchday(md.matchday),
+          expanded,
+          chevron: expanded ? '\u2212' : '+',
+          fixtures: md.fixtures.map(f => ({
+            open: () => this.openMatch(f),
+            rowStyle: theme.historyFixtureRow,
+            home: f.home, away: f.away, scoreH: f.scoreH, scoreA: f.scoreA
+          }))
+        };
+      })
+    };
+  }
+
+  getTheme(){
+    const variant = this.state.styleVariant;
+    const dark = this.state.mode === 'dark';
+    const bg = dark ? 'oklch(16% 0.012 260)' : 'oklch(98% 0.006 90)';
+    const surface = dark ? 'oklch(21% 0.014 260)' : 'oklch(100% 0 0)';
+    const text = dark ? 'oklch(95% 0.01 90)' : 'oklch(20% 0.01 90)';
+    const textMuted = dark ? 'oklch(70% 0.02 90)' : 'oklch(48% 0.01 90)';
+    const border = dark ? 'oklch(32% 0.015 260)' : 'oklch(90% 0.008 90)';
+    const isA = variant === 'A';
+    const headingFont = isA ? "'Sora', sans-serif" : "'Space Grotesk', sans-serif";
+    const bodyFont = isA ? "'Manrope', sans-serif" : "'IBM Plex Sans', sans-serif";
+    const radius = isA ? 16 : 8;
+    const cardBorder = isA ? 'none' : ('1px solid ' + border);
+    const cardShadow = isA && !dark ? '0 2px 14px rgba(0,0,0,0.06)' : 'none';
+
+    const ucl = dark ? 'oklch(28% 0.05 150)' : 'oklch(93% 0.05 150)';
+    const uel = dark ? 'oklch(28% 0.05 60)' : 'oklch(93% 0.05 60)';
+    const rel = dark ? 'oklch(28% 0.06 25)' : 'oklch(93% 0.06 25)';
+
+    return {
+      dark, isA,
+      pageStyle: { background: bg, color: text, fontFamily: bodyFont, minHeight: '100vh', paddingBottom: 40 },
+      headerStyle: {
+        display:'flex', alignItems:'center', justifyContent:'space-between', gap:20,
+        padding: isA ? '16px 32px' : '14px 32px',
+        borderBottom: '1px solid ' + border,
+        background: dark ? surface : (isA ? surface : bg),
+        position:'sticky', top:0, zIndex:10
+      },
+      ballLogoStyle: { width:26, height:26, borderRadius:'50%', background:'conic-gradient(' + text + ' 0deg 90deg, transparent 90deg 180deg, ' + text + ' 180deg 270deg, transparent 270deg 360deg)', opacity:0.85 },
+      brandTextStyle: { fontFamily: headingFont, fontWeight:800, fontSize:19, letterSpacing:'-0.02em' },
+      tabGap: isA ? '8px' : '22px',
+      tabStyle(active, accent){
+        return isA
+          ? { fontFamily: bodyFont, fontWeight:700, fontSize:13.5, padding:'8px 16px', borderRadius:999, border:'none', cursor:'pointer', whiteSpace:'nowrap', background: active ? accent : 'transparent', color: active ? 'white' : textMuted }
+          : { fontFamily: headingFont, fontWeight:600, fontSize:13.5, padding:'8px 2px 10px', border:'none', borderBottom: active ? ('3px solid ' + accent) : '3px solid transparent', background:'transparent', cursor:'pointer', whiteSpace:'nowrap', color: active ? text : textMuted };
+      },
+      segmentWrapStyle: { display:'flex', border:'1px solid ' + border, borderRadius: isA ? 999 : 6, padding:3, gap:2 },
+      segmentButtonStyle(active){
+        return { fontFamily: bodyFont, fontWeight:600, fontSize:12, padding:'6px 12px', borderRadius: isA ? 999 : 4, border:'none', cursor:'pointer', background: active ? text : 'transparent', color: active ? bg : textMuted };
+      },
+      modeButtonStyle: { width:34, height:34, borderRadius:'50%', border:'1px solid ' + border, background:'transparent', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center' },
+      modeIconStyle(mode){
+        return mode === 'dark'
+          ? { width:14, height:14, borderRadius:'50%', boxShadow: '5px -2px 0 0 ' + text, background:'transparent' }
+          : { width:12, height:12, borderRadius:'50%', background:text };
+      },
+      heroStyle(accent){
+        return {
+          display:'flex', alignItems:'center', justifyContent:'space-between',
+          margin: '0 32px', marginTop:24,
+          padding: isA ? '30px 34px' : '20px 26px',
+          borderRadius: isA ? radius+8 : radius,
+          background: isA ? ('linear-gradient(120deg, ' + accent + ', ' + (dark ? 'oklch(24% 0.03 260)' : 'oklch(97% 0.01 90)') + ')') : surface,
+          border: isA ? 'none' : ('1px solid ' + border),
+          color: isA ? (dark ? text : 'oklch(20% 0.02 90)') : text
+        };
+      },
+      heroKicker: { fontFamily: bodyFont, fontWeight:700, fontSize:12.5, textTransform:'uppercase', letterSpacing:'0.08em', opacity:0.75 },
+      heroTitle: { fontFamily: headingFont, fontWeight:800, fontSize: isA ? 34 : 26, marginTop:6, letterSpacing:'-0.02em' },
+      heroStatChip: { display:'flex', flexDirection:'column', alignItems:'center', padding:'10px 18px', borderRadius:12, background: dark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.55)' },
+      heroStatNum: { fontFamily: headingFont, fontWeight:800, fontSize:22 },
+      heroStatLabel: { fontFamily: bodyFont, fontSize:11, opacity:0.7 },
+      bodyGridStyle: { display:'grid', gridTemplateColumns:'1fr 300px', gap:16, padding:'20px 24px 0', alignItems:'start' },
+      cardStyle: { background: surface, borderRadius: radius, border: cardBorder, boxShadow: cardShadow, overflow:'hidden' },
+      tableColsTemplate: '24px minmax(90px,1fr) 20px 20px 20px 20px 26px 26px 30px 32px 78px',
+      tableHeadRowStyle: { display:'grid', gridTemplateColumns:'24px minmax(90px,1fr) 20px 20px 20px 20px 26px 26px 30px 32px 78px', gap:3, padding: isA ? '14px 14px' : '10px 12px', fontFamily: bodyFont, fontWeight:700, fontSize:10.5, color: textMuted, textTransform:'uppercase', letterSpacing:'0.03em', borderBottom:'1px solid ' + border, overflowX:'auto', minWidth:0 },
+      tableRowStyle(zone, accentSoft){
+        const zoneBg = zone === 'ucl' ? ucl : zone === 'uel' ? uel : zone === 'rel' ? rel : (isA ? 'transparent' : 'transparent');
+        return { display:'grid', gridTemplateColumns:'24px minmax(90px,1fr) 20px 20px 20px 20px 26px 26px 30px 32px 78px', gap:3, alignItems:'center', padding: isA ? '11px 14px' : '9px 12px', background: zoneBg, borderBottom:'1px solid ' + border, fontFamily: bodyFont, fontSize:12.5, minWidth:0 };
+      },
+      colRank: { fontWeight:700, color: textMuted, fontSize:12.5 },
+      colClub: {},
+      colClubCell: { display:'flex', alignItems:'center', gap:10, minWidth:0, background:'transparent', border:'none', cursor:'pointer', padding:0, textAlign:'left', color: text, fontFamily: bodyFont },
+      colNum: { textAlign:'center', fontVariantNumeric:'tabular-nums', color: textMuted },
+      colNumBold: { textAlign:'center', fontVariantNumeric:'tabular-nums', fontWeight:800 },
+      colForm: { display:'flex', gap:4, justifyContent:'flex-end' },
+      clubName: { fontWeight:600, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' },
+      badgeStyle(accent){ return { width:26, height:26, borderRadius: isA ? '50%' : 6, background:accent, color:'white', fontSize:10, fontWeight:800, display:'flex', alignItems:'center', justifyContent:'center', flex:'none' }; },
+      formDotStyle(r){
+        const c = r === 'W' ? 'oklch(62% 0.15 150)' : r === 'D' ? 'oklch(75% 0.03 90)' : 'oklch(60% 0.16 25)';
+        return { width:8, height:8, borderRadius:'50%', background:c };
+      },
+      legendRowStyle: { display:'flex', gap:18, padding:'12px 18px', fontSize:11.5, color: textMuted, flexWrap:'wrap' },
+      legendItem: { display:'flex', alignItems:'center', gap:6 },
+      legendDotUcl: { width:9, height:9, borderRadius:2, background: ucl },
+      legendDotUel: { width:9, height:9, borderRadius:2, background: uel },
+      legendDotRel: { width:9, height:9, borderRadius:2, background: rel },
+      sectionTitle: { fontFamily: headingFont, fontWeight:700, fontSize:14.5 },
+      matchStatusRow: { display:'flex', justifyContent:'space-between', alignItems:'center' },
+      matchVenue: { fontSize:11, color: textMuted },
+      matchTeamRow: { display:'flex', justifyContent:'space-between', alignItems:'center', marginTop:4 },
+      matchTeamName: { fontSize:13, fontWeight:600, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap', maxWidth:180 },
+      matchScore: { fontSize:14, fontWeight:800, fontVariantNumeric:'tabular-nums' },
+      matchCardStyle(isScheduled){
+        return { textAlign:'left', width:'100%', padding:12, borderRadius: radius-4, border:'1px solid ' + border, background: isA ? bg : 'transparent', cursor: isScheduled ? 'default' : 'pointer', fontFamily: bodyFont, opacity: isScheduled ? 0.65 : 1, color: text };
+      },
+      matchStatusPill(status, accent){
+        const isLive = status === 'LIVE';
+        return { fontSize:10.5, fontWeight:800, padding:'2px 8px', borderRadius:999, background: isLive ? accent : (dark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.06)'), color: isLive ? 'white' : textMuted, animation: isLive ? 'livePulse 1.6s ease-in-out infinite' : 'none' };
+      },
+      scorerRow: { display:'flex', alignItems:'center', gap:12, padding:'8px 0', borderBottom:'1px solid ' + border, background:'transparent', border:'none', width:'100%', textAlign:'left', cursor:'pointer', color: text, fontFamily: bodyFont },
+      scorerRank: { width:20, fontWeight:800, color: textMuted, fontSize:12.5 },
+      scorerName: { fontWeight:600, fontSize:13.5 },
+      scorerTeam: { fontSize:11.5, color: textMuted },
+      scorerGoals: { fontWeight:800, fontSize:15 },
+      matchWrapStyle: { padding:'22px 32px 0', display:'flex', flexDirection:'column', gap:18 },
+      backButtonStyle: { alignSelf:'flex-start', fontFamily: bodyFont, fontWeight:600, fontSize:13, background:'transparent', border:'none', color: textMuted, cursor:'pointer', padding:0 },
+      scoreHeaderStyle: { display:'flex', alignItems:'center', justifyContent:'center', gap:40, padding: isA ? '28px 20px' : '20px', borderRadius: radius, background: surface, border: cardBorder, boxShadow: cardShadow },
+      scoreHeaderTeam: { display:'flex', flexDirection:'column', alignItems:'center', gap:8, width:160 },
+      scoreHeaderTeamName: { fontWeight:700, fontSize:14.5, textAlign:'center' },
+      scoreHeaderCenter: { display:'flex', flexDirection:'column', alignItems:'center', gap:6 },
+      scoreBig: { fontFamily: headingFont, fontWeight:800, fontSize:44, letterSpacing:'-0.02em' },
+      scoreSub: { fontSize:12, color: textMuted },
+      matchHeaderBadge(accent){ return { width:52, height:52, borderRadius: isA ? '50%' : 8, background:accent, color:'white', fontWeight:800, fontSize:16, display:'flex', alignItems:'center', justifyContent:'center' }; },
+      matchDetailStatusPill(status, accent){
+        const isLive = status === 'LIVE';
+        return { fontSize:11, fontWeight:800, padding:'3px 12px', borderRadius:999, background: isLive ? accent : (dark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.06)'), color: isLive ? 'white' : textMuted, textTransform:'uppercase', letterSpacing:'0.04em', animation: isLive ? 'livePulse 1.6s ease-in-out infinite' : 'none' };
+      },
+      tabRowStyle: { display:'flex', gap: isA ? 10 : 24, borderBottom: isA ? 'none' : ('1px solid ' + border) },
+      matchTabStyle(active){
+        return isA
+          ? { fontFamily: bodyFont, fontWeight:700, fontSize:13.5, padding:'9px 18px', borderRadius:999, border:'none', cursor:'pointer', background: active ? text : (dark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)'), color: active ? bg : textMuted }
+          : { fontFamily: headingFont, fontWeight:600, fontSize:13.5, padding:'8px 2px 10px', border:'none', borderBottom: active ? ('3px solid ' + text) : '3px solid transparent', background:'transparent', cursor:'pointer', color: active ? text : textMuted };
+      },
+      timelineRow: { display:'grid', gridTemplateColumns:'1fr 44px 1fr', alignItems:'center', padding:'8px 0' },
+      timelineSide(active, side){ return { fontSize:13.5, fontWeight:600, textAlign: side === 'left' ? 'right' : 'left', opacity: active ? 1 : 0, paddingLeft: side === 'left' ? 0 : 8, paddingRight: side === 'left' ? 8 : 0 }; },
+      timelineMinute: { textAlign:'center', fontSize:11.5, fontWeight:800, color: textMuted, fontVariantNumeric:'tabular-nums' },
+      pitchWrapStyle: { display:'flex', justifyContent:'center' },
+      pitchStyle: { position:'relative', width:'100%', maxWidth:420, aspectRatio:'0.68', background: 'linear-gradient(180deg, oklch(48% 0.09 145), oklch(44% 0.09 145))', borderRadius:10, overflow:'hidden' },
+      pitchCenterLine: { position:'absolute', left:0, right:0, top:'50%', height:1, background:'rgba(255,255,255,0.4)' },
+      pitchCenterCircle: { position:'absolute', left:'50%', top:'50%', width:70, height:70, marginLeft:-35, marginTop:-35, borderRadius:'50%', border:'1px solid rgba(255,255,255,0.4)' },
+      pitchDotWrap(x,y){ return { position:'absolute', left: x+'%', top: y+'%', transform:'translate(-50%,-50%)', display:'flex', flexDirection:'column', alignItems:'center', gap:1, width:64, zIndex: Math.round(y) }; },
+      pitchDot(accent){ return { width:20, height:20, borderRadius:'50%', background:accent, color:'white', fontSize:9.5, fontWeight:800, display:'flex', alignItems:'center', justifyContent:'center', boxShadow:'0 1px 4px rgba(0,0,0,0.4)', flex:'none' }; },
+      playerLabel: { fontSize:8, color:'white', fontWeight:600, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis', maxWidth:64, textAlign:'center', textShadow:'0 1px 3px rgba(0,0,0,0.8)' },
+      subsGridStyle: { display:'grid', gridTemplateColumns:'1fr 1fr', gap:24, marginTop:20 },
+      subsHeading: { fontWeight:700, fontSize:13, color: textMuted, marginBottom:8 },
+      subsChipsWrap: { display:'flex', flexWrap:'wrap', gap:6 },
+      subChip: { fontSize:11.5, padding:'5px 10px', borderRadius:999, background: dark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)' },
+      statLabelRow: { display:'grid', gridTemplateColumns:'60px 1fr 60px', fontSize:12.5, fontWeight:700 },
+      statLabel: { textAlign:'center', color: textMuted, textTransform:'uppercase', letterSpacing:'0.03em', fontSize:11 },
+      statValueLeft: { textAlign:'left' },
+      statValueRight: { textAlign:'right' },
+      statBarTrack: { display:'flex', height:8, borderRadius:4, overflow:'hidden', marginTop:6, background: dark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)' },
+      statBar(side, color, pct){ return { width: pct+'%', background: color, order: side === 'left' ? 0 : 1 }; },
+      advancedGridStyle: { display:'grid', gridTemplateColumns:'1fr 1fr', gap:20 },
+      radarAxisLine: { stroke: border, strokeWidth:1 },
+      radarHomeFill: { fill: 'oklch(62% 0.17 150 / 0.35)', stroke: 'oklch(62% 0.17 150)', strokeWidth:2 },
+      radarAwayFill: { fill: 'oklch(62% 0.14 260 / 0.28)', stroke: 'oklch(62% 0.14 260)', strokeWidth:2 },
+      radarLabelText: { fontSize:8.5, fill: textMuted, textAnchor:'middle', fontFamily: bodyFont },
+      radarLabelStyle(px, py){ return { position:'absolute', left: px+'%', top: py+'%', transform:'translate(-50%,-50%)', fontSize:10.5, fontWeight:600, color: textMuted, fontFamily: bodyFont, whiteSpace:'nowrap' }; },
+      radarLegendRow: { display:'flex', gap:16, justifyContent:'center', marginTop:8, fontSize:11.5, color: textMuted },
+      legendDot(accent){ return { width:9, height:9, borderRadius:'50%', background:accent }; },
+      heatmapPairStyle: { display:'grid', gridTemplateColumns:'1fr 1fr', gap:16, marginTop:14 },
+      heatmapCaption: { fontSize:11.5, fontWeight:700, color: textMuted, marginBottom:6, textAlign:'center' },
+      heatmapGridStyle: { display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:2, aspectRatio:'0.8', background: 'oklch(48% 0.09 145)', borderRadius:6, overflow:'hidden', padding:3 },
+      heatCell(v, hue){ return { borderRadius:2, background: 'oklch(70% 0.18 ' + hue + ' / ' + (v*0.85).toFixed(2) + ')' }; },
+      footerStyle: { textAlign:'center', fontSize:11, color: textMuted, marginTop:36 },
+      modalBackdrop: { position:'fixed', inset:0, background:'rgba(0,0,0,0.5)', display:'flex', alignItems:'center', justifyContent:'center', zIndex:100, padding:20 },
+      modalCard: { position:'relative', background: surface, borderRadius: radius, padding:28, width:'100%', maxWidth:380, fontFamily: bodyFont, color: text, boxShadow:'0 20px 60px rgba(0,0,0,0.3)' },
+      modalClose: { position:'absolute', top:14, right:14, width:28, height:28, borderRadius:'50%', border:'none', background: dark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.06)', color: text, fontSize:16, cursor:'pointer', lineHeight:1 },
+      modalAvatarStyle(accent){ return { width:52, height:52, borderRadius: isA ? '50%' : 8, background:accent, color:'white', fontWeight:800, fontSize:16, display:'flex', alignItems:'center', justifyContent:'center', flex:'none' }; },
+      modalHeader: { display:'flex', alignItems:'center', gap:14, marginBottom:22 },
+      modalName: { fontFamily: headingFont, fontWeight:800, fontSize:19 },
+      modalMeta: { fontSize:12.5, color: textMuted, marginTop:2 },
+      modalStatsGrid: { display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:14 },
+      modalStatCell: { display:'flex', flexDirection:'column', gap:2, padding:'10px 8px', borderRadius: radius-6, background: dark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)', textAlign:'center' },
+      modalStatNum: { fontFamily: headingFont, fontWeight:800, fontSize:16 },
+      modalStatLabel: { fontSize:10, color: textMuted, textTransform:'uppercase', letterSpacing:'0.03em' },
+      modalFormRow: { display:'flex', alignItems:'center', gap:8, marginTop:18 },
+      modalFormLabel: { fontSize:11.5, fontWeight:700, color: textMuted, textTransform:'uppercase', letterSpacing:'0.03em', marginRight:4 },
+      detailHeroStyle: { display:'flex', alignItems:'center', gap:18, padding: isA ? '24px 26px' : '18px 22px', borderRadius: radius, background: surface, border: cardBorder, boxShadow: cardShadow },
+      detailHeroName: { fontFamily: headingFont, fontWeight:800, fontSize:24 },
+      detailHeroMeta: { fontSize:13, color: textMuted, marginTop:4 },
+      detailStatsGrid: { display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:14, marginTop:14 },
+      seasonRowStyle: { display:'flex', gap:6, marginTop:12 },
+      seasonPillStyle(active, accent){
+        return { fontFamily: bodyFont, fontWeight:700, fontSize:11.5, padding:'5px 12px', borderRadius: isA ? 999 : 4, border: active ? 'none' : ('1px solid ' + (dark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.15)')), cursor:'pointer', background: active ? (dark ? 'rgba(255,255,255,0.9)' : accent) : 'transparent', color: active ? (dark ? 'oklch(20% 0.01 90)' : 'white') : 'inherit' };
+      },
+      matchdayHeadRow: { display:'flex', alignItems:'center', justifyContent:'space-between' },
+      textLinkStyle: { fontFamily: bodyFont, fontWeight:700, fontSize:12, background:'transparent', border:'none', cursor:'pointer', color: textMuted },
+      historyHeaderStyle(expanded){
+        return { display:'flex', alignItems:'center', justifyContent:'space-between', width:'100%', textAlign:'left', padding:'12px 20px', background: expanded ? (dark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)') : 'transparent', border:'none', borderBottom:'1px solid ' + border, cursor:'pointer', fontFamily: headingFont, fontWeight:700, fontSize:14, color: text };
+      },
+      historyFixtureList: { display:'flex', flexDirection:'column', padding:'6px 14px 10px' },
+      historyFixtureRow: { display:'grid', gridTemplateColumns:'1fr 70px 1fr', alignItems:'center', gap:8, padding:'8px 10px', border:'none', background:'transparent', cursor:'pointer', fontFamily: bodyFont, fontSize:13, color: text, borderRadius:8 },
+      historyTeamNameHome: { overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap', textAlign:'right' },
+      historyTeamNameAway: { overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap', textAlign:'left' },
+      historyScore: { textAlign:'center', fontWeight:800, fontVariantNumeric:'tabular-nums' }
+    };
+  }
+}
+
+</script>
+</body>
+</html>
